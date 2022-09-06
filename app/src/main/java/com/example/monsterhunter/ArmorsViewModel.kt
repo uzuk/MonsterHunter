@@ -1,13 +1,15 @@
 package com.example.monsterhunter
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.youtube.player.internal.k
+import com.google.android.youtube.player.internal.v
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.util.*
 
 
 enum class ApiStatus { LOADING, ERROR, DONE }
@@ -34,15 +36,32 @@ class ArmorsViewModel : ViewModel() {
     fun getArmors() {
         _status.value = ApiStatus.LOADING
         coroutineScope.launch {
-            val getProductsDeferred = ArmorsApi.retrofitService.getArmorAsync()
+            val getArmorsDeferred = ArmorsApi.retrofitService.getArmorAsync()
 
             try {
                 // this will run on a thread managed by Retrofit
-                val armorsFullData = getProductsDeferred.await()
+                val armorsFullData = getArmorsDeferred.await()
                 _armors.value = armorsFullData
                 _status.value = ApiStatus.DONE
             } catch (e: Exception) {
                 _status.value = ApiStatus.ERROR
+            }
+        }
+    }
+    fun getFilteredArmors(filter: String) {
+        coroutineScope.launch {
+            val query = "{\"name\":\"$filter\"}"
+            val getArmorsDeferred = ArmorsApi.retrofitService.getFilteredArmorsAsync(query)
+            Log.e("errorS", query)
+            try {
+                // this will run on a thread managed by Retrofit
+                val armorsFullData = getArmorsDeferred.await()
+                _armors.value = emptyList()
+                _armors.value = armorsFullData
+                _status.value = ApiStatus.DONE
+            } catch (e: Exception) {
+                _status.value = ApiStatus.ERROR
+                Log.e("error",e.message.toString())
             }
         }
     }

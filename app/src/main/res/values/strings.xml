@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MonsterHunter</string>
     <string name="something_went_wrong">Something went wrong</string>
+    <string name="filter_armor">Filter Armor</string>
 </resources>

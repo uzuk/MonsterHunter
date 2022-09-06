@@ -7,6 +7,10 @@ import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.Path
+import retrofit2.http.Query
+
 const val BASE_URL = "https://mhw-db.com/"
 
 /**
@@ -22,7 +26,7 @@ private val moshi = Moshi.Builder()
  * object.
  */
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .addConverterFactory(MoshiConverterFactory.create(moshi).asLenient())
     .addCallAdapterFactory(CoroutineCallAdapterFactory())
     .baseUrl(BASE_URL)
     .build()
@@ -36,6 +40,11 @@ interface ArmorsApiService {
 
     @GET("armor")
     fun getArmorAsync():
+            Deferred<List<Armor>>
+
+    @Headers("Accept-Encoding: gzip, deflate, br")
+    @GET("skills")
+    fun getFilteredArmorsAsync(@Query("q") nameValue: String):
             Deferred<List<Armor>>
 
 }
